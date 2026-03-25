@@ -4,7 +4,8 @@ Thank you to everyone who has contributed to PlantOntology! 🌿
 
 ## Founders & Core Team
 
-- **AlexLee** (@alexlee_77886) - Founder, architecture, data curation
+- **AlexLee** (@alexlee_77886) - Founder, conceptual design, data curation, OpenCrab architecture, landscape domain expertise
+- **Claude Code** - Core development, automation, documentation
 
 ## Data Contributors
 
