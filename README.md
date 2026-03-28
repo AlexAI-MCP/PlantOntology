@@ -5,11 +5,14 @@
 
   **The world's first open-source plant knowledge graph** — built by landscape professionals, for everyone.
 
+  [![Live Demo](https://img.shields.io/badge/Live%20Demo-railway.app-blueviolet)](https://plantontology-production.up.railway.app/)
   [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
   [![Neo4j](https://img.shields.io/badge/Neo4j-Graph%20DB-blue)](https://neo4j.com)
   [![Python](https://img.shields.io/badge/Python-3.11%2B-yellow)](https://python.org)
   [![MCP](https://img.shields.io/badge/MCP-Claude%20Code-purple)](https://modelcontextprotocol.io)
   [![Species](https://img.shields.io/badge/Species-10%2C888+-green.svg)](#)
+
+  **[plantontology-production.up.railway.app](https://plantontology-production.up.railway.app/)**
 </div>
 
 **PlantOntology** is an open-source knowledge graph that models plants, ecosystems, and landscape design relationships — making 19 years of professional landscape expertise available to everyone through AI.
