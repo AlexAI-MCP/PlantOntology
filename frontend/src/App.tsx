@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom'
-import { Leaf, Calculator, BarChart2 } from 'lucide-react'
+import { Leaf, Calculator, BarChart2, Github, Users } from 'lucide-react'
 
 import { searchSpecies } from './api'
 import type { Species, SearchFilters, SearchResponse } from './types'
+import { LangProvider, useLang } from './LangContext'
+import { LANGS } from './i18n'
 
 import SearchBar from './components/SearchBar'
 import FilterPanel from './components/FilterPanel'
@@ -29,6 +31,7 @@ const LIMIT = 20
 // ── 홈 페이지 ──────────────────────────────────────────────────────────
 
 function HomePage() {
+  const { t } = useLang()
   const [filters, setFilters] = useState<SearchFilters>(DEFAULT_FILTERS)
   const [result, setResult] = useState<SearchResponse | null>(null)
   const [page, setPage] = useState(0)
@@ -36,11 +39,10 @@ function HomePage() {
   const [initLoading, setInitLoading] = useState(true)
   const [selected, setSelected] = useState<Species | null>(null)
 
-  // 쿼리 입력 디바운스를 위한 ref
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [debouncedFilters, setDebouncedFilters] = useState(filters)
 
-  const fetch = useCallback(async (f: SearchFilters, pageNum: number) => {
+  const fetchData = useCallback(async (f: SearchFilters, pageNum: number) => {
     setLoading(true)
     try {
       const res = await searchSpecies(f, LIMIT, pageNum * LIMIT)
@@ -53,7 +55,6 @@ function HomePage() {
     }
   }, [])
 
-  // 필터 변경 시 디바운스
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
     debounceRef.current = setTimeout(() => {
@@ -62,20 +63,11 @@ function HomePage() {
     }, 300)
   }, [filters])
 
-  // 디바운스된 필터 또는 페이지가 바뀌면 API 호출
   useEffect(() => {
-    fetch(debouncedFilters, page)
-  }, [debouncedFilters, page, fetch])
+    fetchData(debouncedFilters, page)
+  }, [debouncedFilters, page, fetchData])
 
   const totalPages = result ? Math.ceil(result.total / LIMIT) : 0
-
-  function handleFilterChange(f: SearchFilters) {
-    setFilters(f)
-  }
-
-  function handleQueryChange(q: string) {
-    setFilters(prev => ({ ...prev, q }))
-  }
 
   return (
     <>
@@ -83,45 +75,46 @@ function HomePage() {
       <div className="hero">
         <div className="hero-bg-icon">🌿</div>
         <h2>PlantOntology</h2>
-        <p>10,000+ 수종 지식 그래프 — 올바른 장소에 올바른 식물을</p>
+        <p>{t.hero_tagline}</p>
         <div className="hero-stats">
           <div className="hero-stat">
             <div className="num">{result ? result.total.toLocaleString() : '—'}</div>
-            <div className="label">검색 결과</div>
+            <div className="label">{t.stat_results}</div>
           </div>
           <div className="hero-stat">
             <div className="num">45</div>
-            <div className="label">데이터셋</div>
+            <div className="label">{t.stat_datasets}</div>
           </div>
           <div className="hero-stat">
             <div className="num">10</div>
-            <div className="label">기후존</div>
+            <div className="label">{t.stat_climates}</div>
           </div>
         </div>
       </div>
 
       {/* 레이아웃 */}
       <div className="main-layout">
-        <FilterPanel filters={filters} onChange={handleFilterChange} />
+        <FilterPanel filters={filters} onChange={setFilters} />
 
         <div className="results-area">
           <SearchBar
             value={filters.q}
-            onChange={handleQueryChange}
+            onChange={q => setFilters(prev => ({ ...prev, q }))}
             total={result?.total ?? 0}
             loading={loading}
+            placeholder={t.search_placeholder}
           />
 
           {initLoading ? (
             <div className="spinner-wrap">
               <div className="spinner" />
-              <span>데이터 로딩 중... 최초 요청 시 잠시 걸릴 수 있습니다.</span>
+              <span>{t.loading}</span>
             </div>
           ) : result && result.results.length === 0 ? (
             <div className="empty-state">
               <div className="empty-state-icon">🔍</div>
-              <h3>검색 결과 없음</h3>
-              <p>다른 검색어나 필터를 시도해보세요.</p>
+              <h3>{t.empty_title}</h3>
+              <p>{t.empty_body}</p>
             </div>
           ) : (
             <>
@@ -136,7 +129,6 @@ function HomePage() {
                 ))}
               </div>
 
-              {/* 페이지네이션 */}
               {totalPages > 1 && (
                 <div className="pagination">
                   <button
@@ -147,7 +139,6 @@ function HomePage() {
                     ‹
                   </button>
 
-                  {/* 페이지 번호 */}
                   {Array.from({ length: Math.min(7, totalPages) }, (_, i) => {
                     let pageNum: number
                     if (totalPages <= 7) {
@@ -188,9 +179,81 @@ function HomePage() {
         </div>
       </div>
 
-      {/* 상세 모달 */}
       <SpeciesModal species={selected} onClose={() => setSelected(null)} />
     </>
+  )
+}
+
+// ── 네브바 ──────────────────────────────────────────────────────────────
+
+function Navbar() {
+  const { lang, setLang, t } = useLang()
+
+  return (
+    <nav className="navbar">
+      <a
+        href="https://github.com/AlexAI-MCP/PlantOntology"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="navbar-brand"
+      >
+        <div className="logo-icon">P</div>
+        <h1>PlantOntology</h1>
+      </a>
+
+      <div className="navbar-links">
+        <NavLink to="/" end>
+          <Leaf size={15} />
+          {t.nav_species}
+        </NavLink>
+        <NavLink to="/calculator">
+          <Calculator size={15} />
+          {t.nav_carbon}
+        </NavLink>
+        <NavLink to="/stats">
+          <BarChart2 size={15} />
+          {t.nav_stats}
+        </NavLink>
+
+        {/* 구분선 */}
+        <span className="nav-divider" />
+
+        {/* 커뮤니티 */}
+        <a
+          href="https://open.kakao.com/o/gm2q2rnh"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="nav-community-btn"
+        >
+          <Users size={14} />
+          {t.nav_community}
+        </a>
+
+        {/* GitHub */}
+        <a
+          href="https://github.com/AlexAI-MCP/PlantOntology"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="nav-icon-btn"
+          aria-label="GitHub"
+        >
+          <Github size={18} />
+        </a>
+
+        {/* 언어 토글 */}
+        <div className="lang-toggle">
+          {LANGS.map(({ code, label }) => (
+            <button
+              key={code}
+              className={`lang-btn ${lang === code ? 'active' : ''}`}
+              onClick={() => setLang(code)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </nav>
   )
 }
 
@@ -198,38 +261,20 @@ function HomePage() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      {/* 네브바 */}
-      <nav className="navbar">
-        <NavLink to="/" className="navbar-brand">
-          <div className="logo-icon">P</div>
-          <h1>PlantOntology</h1>
-        </NavLink>
-        <div className="navbar-links">
-          <NavLink to="/" end>
-            <Leaf size={15} />
-            수종 탐색
-          </NavLink>
-          <NavLink to="/calculator">
-            <Calculator size={15} />
-            탄소 계산기
-          </NavLink>
-          <NavLink to="/stats">
-            <BarChart2 size={15} />
-            통계
-          </NavLink>
-        </div>
-      </nav>
+    <LangProvider>
+      <BrowserRouter>
+        <Navbar />
 
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/calculator" element={<CarbonCalculator />} />
-        <Route path="/stats" element={<StatsPage />} />
-      </Routes>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/calculator" element={<CarbonCalculator />} />
+          <Route path="/stats" element={<StatsPage />} />
+        </Routes>
 
-      <footer className="footer">
-        PlantOntology — Open-source plant knowledge graph · CC BY 4.0
-      </footer>
-    </BrowserRouter>
+        <footer className="footer">
+          PlantOntology — Open-source plant knowledge graph · CC BY 4.0
+        </footer>
+      </BrowserRouter>
+    </LangProvider>
   )
 }

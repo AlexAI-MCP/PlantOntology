@@ -5,9 +5,10 @@ interface Props {
   onChange: (v: string) => void
   total: number
   loading: boolean
+  placeholder?: string
 }
 
-export default function SearchBar({ value, onChange, total, loading }: Props) {
+export default function SearchBar({ value, onChange, total, loading, placeholder }: Props) {
   return (
     <div className="search-header">
       <div className="search-input-wrap">
@@ -15,7 +16,7 @@ export default function SearchBar({ value, onChange, total, loading }: Props) {
         <input
           className="search-input"
           type="search"
-          placeholder="한국명, 학명, 영명으로 검색..."
+          placeholder={placeholder ?? '한국명, 학명, 영명으로 검색...'}
           value={value}
           onChange={e => onChange(e.target.value)}
           autoComplete="off"
@@ -23,9 +24,9 @@ export default function SearchBar({ value, onChange, total, loading }: Props) {
       </div>
       <div className="results-count">
         {loading ? (
-          <span>검색 중...</span>
+          <span>...</span>
         ) : (
-          <span><strong>{total.toLocaleString()}</strong>종 검색됨</span>
+          <span><strong>{total.toLocaleString()}</strong></span>
         )}
       </div>
     </div>

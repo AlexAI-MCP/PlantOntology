@@ -129,6 +129,106 @@ button {
   background: var(--accent-lightest);
 }
 
+/* 구분선 */
+.nav-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  margin: 0 4px;
+}
+
+/* GitHub 아이콘 버튼 */
+.nav-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  transition: all 0.2s;
+}
+
+.nav-icon-btn:hover {
+  color: var(--primary);
+  background: var(--accent-lightest);
+}
+
+/* 커뮤니티 버튼 */
+.nav-community-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background: #fee500;
+  color: #381e1f;
+  transition: all 0.2s;
+}
+
+.nav-community-btn:hover {
+  background: #fdd835;
+  transform: translateY(-1px);
+}
+
+/* 언어 토글 */
+.lang-toggle {
+  display: flex;
+  align-items: center;
+  background: var(--accent-lightest);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  gap: 2px;
+}
+
+.lang-btn {
+  padding: 4px 9px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  transition: all 0.15s;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+}
+
+.lang-btn.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.lang-btn:hover:not(.active) {
+  color: var(--primary);
+}
+
+/* 모바일 네브바 */
+@media (max-width: 700px) {
+  .navbar {
+    padding: 0 16px;
+    flex-wrap: wrap;
+    height: auto;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    gap: 8px;
+  }
+
+  .navbar-links {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .nav-community-btn span,
+  .nav-community-btn {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+}
+
 /* ── 히어로 ─────────────────────────────────────────────────────── */
 .hero {
   padding: 48px 32px 36px;
